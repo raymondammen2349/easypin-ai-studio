@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EasyPin AI Studio</title>
+<style>
+  :root {
+    --navy: #1c2444;
+    --navy-light: #262f59;
+    --bg: #f4f3f0;
+    --border: #d6d3cc;
+    --text: #292524;
+    --muted: #78716c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 50px 24px 80px; }
+  .eyebrow { text-align:center; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:20px;}
+  h1 { text-align:center; font-family: Georgia, "Times New Roman", serif; font-size:42px; margin:0 0 18px; }
+  .tagline { text-align:center; color:var(--muted); font-size:14px; max-width:560px; margin:0 auto 28px; line-height:1.6; }
+
+  .keybar { background:#fff; border:1px solid var(--border); border-radius:8px; padding:12px 16px; margin-bottom:24px; font-size:13px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .keybar input { flex:1; min-width:200px; border:1px solid var(--border); border-radius:6px; padding:8px 10px; font-size:13px;}
+  .keybar button { background:var(--navy); color:#fff; border:none; border-radius:6px; padding:8px 14px; font-size:13px; cursor:pointer; }
+  .keybar button:hover { background:var(--navy-light); }
+  .keybar a { color:var(--navy); text-decoration:underline; }
+  .keysaved { color:#15803d; font-size:12px; }
+
+  .tabs { display:flex; justify-content:center; margin-bottom:24px; }
+  .tabs-inner { display:inline-flex; background:#fff; border:1px solid var(--border); border-radius:8px; padding:4px; }
+  .tab-btn { border:none; background:transparent; padding:7px 16px; font-size:12px; font-weight:600; border-radius:5px; cursor:pointer; color:var(--muted); }
+  .tab-btn.active { background:var(--navy); color:#fff; }
+
+  .banner { display:flex; gap:8px; background:#eef0fb; border:1px solid #dde0f3; border-radius:8px; padding:12px 16px; margin-bottom:24px; font-size:13px; color:#1e2a6e; }
+
+  .categories { background:#fff; border:1px solid var(--border); border-radius:8px; padding:8px; margin-bottom:24px; display:grid; grid-template-columns:repeat(auto-fill, minmax(95px,1fr)); gap:4px; }
+  .cat-btn { border:none; background:transparent; padding:8px 6px; font-size:11px; font-weight:600; text-transform:uppercase; border-radius:5px; cursor:pointer; color:#57534e; white-space:nowrap; }
+  .cat-btn.active { background:var(--navy); color:#fff; }
+
+  .panel { background:#fff; border:1px solid var(--border); border-radius:8px; padding:24px; }
+  .grid3 { display:grid; grid-template-columns:1fr; gap:24px; }
+  @media (min-width:720px) { .grid3 { grid-template-columns:1fr 1fr 1fr; } }
+
+  .label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; margin-bottom:2px; }
+  .sublabel { font-size:11px; color:var(--muted); margin-bottom:10px; }
+
+  .upload-tile { position:relative; border:1px solid var(--border); border-radius:6px; background:#fff; height:280px; display:flex; align-items:center; justify-content:center; overflow:hidden; cursor:pointer; }
+  .upload-tile.small { height:90px; }
+  .upload-tile img { width:100%; height:100%; object-fit:cover; }
+  .upload-tile .placeholder { display:flex; flex-direction:column; align-items:center; gap:8px; color:var(--muted); font-size:11px; font-weight:600; text-transform:uppercase; }
+  .upload-tile .circle { background:#f5f5f4; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+  .remove-btn { position:absolute; top:6px; right:6px; background:rgba(255,255,255,.9); border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-size:12px; line-height:1; }
+  .product-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+
+  textarea, select, input[type=text] {
+    width:100%; font-size:12px; border:1px solid var(--border); border-radius:6px; padding:9px; font-family:inherit; resize:none;
+  }
+  textarea { height:60px; margin-top:10px; }
+  select { background:#fff; }
+
+  .option-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:8px; }
+  @media (min-width:720px) { .option-grid { grid-template-columns:repeat(6,1fr); } }
+  .opt-btn { border:1px solid var(--border); background:#fff; border-radius:6px; padding:10px 6px; cursor:pointer; font-size:12px; font-weight:600; text-align:center; }
+  .opt-btn.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .opt-btn .sub { display:block; font-size:9px; font-weight:400; text-transform:uppercase; color:var(--muted); margin-top:2px; }
+  .opt-btn.active .sub { color:#c7d2fe; }
+
+  .scene-row { display:grid; grid-template-columns:1fr; gap:12px; margin-top:8px; }
+  @media (min-width:720px) { .scene-row { grid-template-columns:1fr 1fr 1fr; } }
+  .scene-row .photo-label { font-size:10px; text-transform:uppercase; color:var(--muted); margin-bottom:4px; display:block; }
+
+  .section { margin-top:28px; }
+  .section-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+  .auto-btn { border:1px solid var(--border); background:#fff; border-radius:6px; padding:6px 12px; font-size:11px; font-weight:600; cursor:pointer; color:#57534e; }
+
+  .generate-btn { width:100%; background:var(--navy); color:#fff; border:none; border-radius:6px; padding:14px; font-size:14px; font-weight:600; cursor:pointer; margin-top:32px; }
+  .generate-btn:hover { background:var(--navy-light); }
+  .generate-btn:disabled { opacity:.7; cursor:default; }
+  .hint { text-align:center; font-size:11px; color:var(--muted); margin-top:10px; }
+  .error-box { margin-top:16px; background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; border-radius:6px; padding:12px 16px; font-size:12px; }
+
+  .results { margin-top:32px; }
+  .results-grid { display:grid; grid-template-columns:1fr; gap:12px; }
+  @media (min-width:720px) { .results-grid { grid-template-columns:1fr 1fr 1fr; } }
+  .result-card { border:1px solid var(--border); border-radius:6px; overflow:hidden; background:#fafaf9; }
+  .result-card img { width:100%; display:block; }
+  .result-card p { font-size:11px; color:var(--muted); padding:6px 10px; margin:0; }
+
+  .spinner { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:spin 0.8s linear infinite; margin-right:6px; vertical-align:-2px;}
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  input[type=file] { display:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">EasyPin AI</p>
+  <h1>EasyPin AI Studio</h1>
+  <p class="tagline">Upload your products, outfits, or subjects to instantly generate viral Pinterest pins, professional lifestyle photography, and stunning visual content across any category.</p>
+
+  <div class="keybar" style="display:none;">
+    <span>This app calls a secure backend — no key needed in the browser.</span>
+  </div>
+
+  <div class="tabs">
+    <div class="tabs-inner">
+      <button class="tab-btn active" data-tab="studio">AI Photo Studio</button>
+      <button class="tab-btn" data-tab="collage">Collage Maker</button>
+      <button class="tab-btn" data-tab="influencer">AI Influencer</button>
+    </div>
+  </div>
+
+  <div id="studioPanel">
+    <div class="banner">ⓘ&nbsp;<span><strong>How to use:</strong> Select a category, upload a photo, choose an aspect ratio, and click generate to create 3 stunning photos!</span></div>
+
+    <div class="categories" id="categories"></div>
+
+    <div class="panel">
+      <div class="grid3">
+        <div>
+          <div class="label">Model / Influencer</div>
+          <div class="sublabel">Upload a reference model. Auto-generated if left blank.</div>
+          <div class="upload-tile" id="modelTile">
+            <div class="placeholder"><span class="circle">⬆</span>Upload Model / Influencer</div>
+          </div>
+          <input type="file" id="modelInput" accept="image/*" />
+          <textarea id="modelDetails" placeholder="Additional model details (e.g., smiling, sunglasses)..."></textarea>
+        </div>
+
+        <div>
+          <div class="label">Product Images</div>
+          <div class="sublabel">Upload up to 4 images of your product.</div>
+          <div class="product-grid" id="productGrid"></div>
+          <textarea id="productDetails" placeholder="Product details (e.g., matte black finish, glass bottle)..."></textarea>
+        </div>
+
+        <div>
+          <div class="label">Product Scale</div>
+          <div class="sublabel">Help the AI understand the true size of your product.</div>
+          <select id="productScale">
+            <option>Tiny (e.g., earring, ring)</option>
+            <option selected>Small (e.g., smartphone, coffee mug)</option>
+            <option>Medium (e.g., shoebox, handbag)</option>
+            <option>Large (e.g., backpack, lamp)</option>
+            <option>Oversized (e.g., furniture, surfboard)</option>
+          </select>
+          <div style="margin-top:18px;">
+            <div class="label">Additional Context</div>
+            <div class="sublabel">Describe any props or context to include in the scene.</div>
+            <textarea id="additionalContext" style="height:100px;" placeholder="Additional context (e.g., placed next to a coffee cup)..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="label">Aspect Ratio</div>
+        <div class="option-grid" id="aspectGrid"></div>
+      </div>
+
+      <div class="section">
+        <div class="label">Lighting</div>
+        <div class="option-grid" id="lightingGrid"></div>
+      </div>
+
+      <div class="section">
+        <div class="label">Custom Scene Directions</div>
+        <textarea id="customScene" placeholder="E.g., A futuristic cyberpunk city with neon pink lights... (Overrides selections below if filled)"></textarea>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <div class="label" style="margin:0;">Select Scenes for 3 Photos</div>
+          <button class="auto-btn" id="autoSelectBtn">✨ Auto-Select Based on Product</button>
+        </div>
+        <div class="scene-row" id="sceneRow"></div>
+      </div>
+
+      <button class="generate-btn" id="generateBtn">✨ Generate Images</button>
+      <p class="hint">Calls the Gemini API directly from your browser using the key above.</p>
+
+      <div id="errorBox" style="display:none;" class="error-box"></div>
+
+      <div class="results" id="resultsBox" style="display:none;">
+        <div class="label">Generated Photos</div>
+        <div class="results-grid" id="resultsGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="placeholderPanel" class="panel" style="display:none; text-align:center; color:var(--muted); padding:50px;">
+    This panel isn't built yet — coming soon.
+  </div>
+</div>
+
+<script>
+const CATEGORIES = ["Outfit","Menswear","Accessories","Beauty","Supplements","Food","Baby","Pet","Home Decor","Furniture","Tech","Bridal","Luxury","UGC","Outdoors","Travel","Holiday","Product","SEO"];
+const ASPECT_RATIOS = [
+  {v:"1:1", l:"Instagram"}, {v:"2:3", l:"Pinterest"}, {v:"3:4", l:"Instagram"},
+  {v:"4:3", l:"Standard"}, {v:"9:16", l:"TikTok/Reels"}, {v:"16:9", l:"YouTube"}
+];
+const LIGHTING = ["Natural Daylight","Golden Hour","Sun-Drenched","Bright & Airy","Bright Soft Daylight","High Key (Ultra Bright)"];
+const SCENES = ["Clean Bathroom Vanity","Water Splashes & Droplets","Pastel Pink Studio","Marble Countertop","Botanical Greenery","Soft Linen Backdrop","Sunlit Window Sill","Minimal White Studio"];
+
+const state = {
+  category: "Beauty",
+  modelImage: null,       // {base64, mimeType}
+  productImages: [null,null,null,null],
+  aspectRatio: "2:3",
+  lighting: "Bright & Airy",
+  scenes: [SCENES[0], SCENES[1], SCENES[2]],
+};
+
+// API key handling removed — the backend holds the key securely now.
+
+// ---------- Tabs ----------
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const isStudio = btn.dataset.tab === "studio";
+    document.getElementById("studioPanel").style.display = isStudio ? "" : "none";
+    document.getElementById("placeholderPanel").style.display = isStudio ? "none" : "";
+  };
+});
+
+// ---------- Categories ----------
+const catWrap = document.getElementById("categories");
+CATEGORIES.forEach(cat => {
+  const b = document.createElement("button");
+  b.className = "cat-btn" + (cat === state.category ? " active" : "");
+  b.textContent = cat;
+  b.onclick = () => {
+    state.category = cat;
+    catWrap.querySelectorAll(".cat-btn").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+  };
+  catWrap.appendChild(b);
+});
+
+// ---------- File → base64 helper ----------
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      resolve({ base64: result.split(",")[1], mimeType: file.type || "image/png", url: result });
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ---------- Model upload ----------
+const modelTile = document.getElementById("modelTile");
+const modelInput = document.getElementById("modelInput");
+modelTile.onclick = () => modelInput.click();
+modelInput.onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const img = await fileToBase64(file);
+  state.modelImage = img;
+  renderModelTile();
+};
+function renderModelTile() {
+  if (state.modelImage) {
+    modelTile.innerHTML = `<img src="${state.modelImage.url}"/><button class="remove-btn" id="removeModel">✕</button>`;
+    document.getElementById("removeModel").onclick = (ev) => {
+      ev.stopPropagation();
+      state.modelImage = null;
+      renderModelTile();
+    };
+  } else {
+    modelTile.innerHTML = `<div class="placeholder"><span class="circle">⬆</span>Upload Model / Influencer</div>`;
+  }
+}
+
+// ---------- Product uploads ----------
+const productGrid = document.getElementById("productGrid");
+function renderProductGrid() {
+  productGrid.innerHTML = "";
+  const filled = state.productImages.filter(Boolean).length;
+  state.productImages.forEach((img, idx) => {
+    const tile = document.createElement("div");
+    if (img) {
+      tile.className = "upload-tile small";
+      tile.innerHTML = `<img src="${img.url}"/><button class="remove-btn">✕</button>`;
+      tile.querySelector(".remove-btn").onclick = (ev) => {
+        ev.stopPropagation();
+        state.productImages[idx] = null;
+        renderProductGrid();
+      };
+    } else if (idx === filled) {
+      tile.className = "upload-tile small";
+      tile.innerHTML = `<div class="placeholder"><span class="circle">＋</span>Add Item</div>`;
+      tile.onclick = () => {
+        const inp = document.createElement("input");
+        inp.type = "file";
+        inp.accept = "image/*";
+        inp.onchange = async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          state.productImages[idx] = await fileToBase64(file);
+          renderProductGrid();
+        };
+        inp.click();
+      };
+    } else {
+      tile.style.height = "90px";
+      tile.style.border = "1px dashed #e7e5e4";
+      tile.style.borderRadius = "6px";
+      tile.style.background = "#fafaf9";
+    }
+    productGrid.appendChild(tile);
+  });
+}
+
+// ---------- Aspect ratio / lighting ----------
+const aspectGrid = document.getElementById("aspectGrid");
+ASPECT_RATIOS.forEach(({v,l}) => {
+  const b = document.createElement("button");
+  b.className = "opt-btn" + (v === state.aspectRatio ? " active" : "");
+  b.innerHTML = `${v}<span class="sub">${l}</span>`;
+  b.onclick = () => {
+    state.aspectRatio = v;
+    aspectGrid.querySelectorAll(".opt-btn").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+  };
+  aspectGrid.appendChild(b);
+});
+
+const lightingGrid = document.getElementById("lightingGrid");
+LIGHTING.forEach(opt => {
+  const b = document.createElement("button");
+  b.className = "opt-btn" + (opt === state.lighting ? " active" : "");
+  b.textContent = opt;
+  b.onclick = () => {
+    state.lighting = opt;
+    lightingGrid.querySelectorAll(".opt-btn").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+  };
+  lightingGrid.appendChild(b);
+});
+
+// ---------- Scene selectors ----------
+const sceneRow = document.getElementById("sceneRow");
+function renderScenes() {
+  sceneRow.innerHTML = "";
+  state.scenes.forEach((scene, idx) => {
+    const col = document.createElement("div");
+    const sel = document.createElement("select");
+    SCENES.forEach(opt => {
+      const o = document.createElement("option");
+      o.value = opt; o.textContent = opt;
+      if (opt === scene) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.onchange = (e) => { state.scenes[idx] = e.target.value; };
+    col.innerHTML = `<span class="photo-label">Photo ${idx+1}</span>`;
+    col.appendChild(sel);
+    sceneRow.appendChild(col);
+  });
+}
+document.getElementById("autoSelectBtn").onclick = () => {
+  const shuffled = [...SCENES].sort(() => Math.random() - 0.5);
+  state.scenes = shuffled.slice(0,3);
+  renderScenes();
+};
+
+renderModelTile();
+renderProductGrid();
+renderScenes();
+
+// ---------- Prompt builder ----------
+function buildPrompt(scene) {
+  const customScene = document.getElementById("customScene").value.trim();
+  const productDetails = document.getElementById("productDetails").value.trim();
+  const modelDetails = document.getElementById("modelDetails").value.trim();
+  const productScale = document.getElementById("productScale").value;
+  const additionalContext = document.getElementById("additionalContext").value.trim();
+
+  const lines = [
+    `Create a professional, photorealistic ${state.category} product photograph suitable for Pinterest.`,
+    customScene ? `Scene: ${customScene}` : `Scene: ${scene}.`,
+    `Lighting: ${state.lighting}.`,
+    `Aspect ratio: ${state.aspectRatio}.`,
+    productScale ? `Product scale reference: ${productScale}.` : null,
+    productDetails ? `Product details: ${productDetails}.` : null,
+    modelDetails ? `Model/influencer direction: ${modelDetails}.` : null,
+    additionalContext ? `Additional context/props: ${additionalContext}.` : null,
+    "Keep the actual product (and model, if provided) visually consistent with the reference images supplied. High production value, sharp focus, no text overlays, no watermarks."
+  ].filter(Boolean);
+  return lines.join("\n");
+}
+
+document.getElementById("generateBtn").onclick = async () => {
+  const btn = document.getElementById("generateBtn");
+  const errorBox = document.getElementById("errorBox");
+  const resultsBox = document.getElementById("resultsBox");
+  const resultsGrid = document.getElementById("resultsGrid");
+
+  errorBox.style.display = "none";
+  resultsBox.style.display = "none";
+  resultsGrid.innerHTML = "";
+
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span>Generating...`;
+
+  try {
+    const payload = {
+      category: state.category,
+      modelImage: state.modelImage
+        ? { mimeType: state.modelImage.mimeType, base64: state.modelImage.base64 }
+        : null,
+      modelDetails: document.getElementById("modelDetails").value.trim(),
+      productImages: state.productImages
+        .filter(Boolean)
+        .map(img => ({ mimeType: img.mimeType, base64: img.base64 })),
+      productDetails: document.getElementById("productDetails").value.trim(),
+      productScale: document.getElementById("productScale").value,
+      additionalContext: document.getElementById("additionalContext").value.trim(),
+      aspectRatio: state.aspectRatio,
+      lighting: state.lighting,
+      customScene: document.getElementById("customScene").value.trim(),
+      scenes: state.scenes,
+    };
+
+    const res = await fetch("/api/generate-images", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.error || `Request failed (${res.status})`);
+    }
+
+    const data = await res.json();
+    (data.images || []).forEach(img => {
+      const card = document.createElement("div");
+      card.className = "result-card";
+      card.innerHTML = `<img src="data:${img.mimeType};base64,${img.base64}"/><p>${img.scene}</p>`;
+      resultsGrid.appendChild(card);
+    });
+    resultsBox.style.display = "";
+  } catch (err) {
+    errorBox.textContent = err.message || "Generation failed.";
+    errorBox.style.display = "";
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `✨ Generate Images`;
+  }
+};
+</script>
+</body>
+</html>
